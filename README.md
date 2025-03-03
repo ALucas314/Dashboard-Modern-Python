@@ -29,11 +29,11 @@
     <img src="./src/img 2.png" alt="Exemplo imagem" width="48%">
 </div>
 <br>
-<!-- Ajustando a altura para ser a mesma das imagens 1 e 2, e mantendo a proporcionalidade -->
+<!-- Aumentando a altura para 350px para as imagens 3, 4 e 5 -->
 <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
-    <img src="./src/img 3.png" alt="Exemplo imagem" height="250px" style="object-fit: contain;">
-    <img src="./src/img 4.png" alt="Exemplo imagem" height="250px" style="object-fit: contain;">
-    <img src="./src/img 5.png" alt="Exemplo imagem" height="250px" style="object-fit: contain;">
+    <img src="./src/img 3.png" alt="Exemplo imagem" height="350px" style="object-fit: contain;">
+    <img src="./src/img 4.png" alt="Exemplo imagem" height="350px" style="object-fit: contain;">
+    <img src="./src/img 5.png" alt="Exemplo imagem" height="350px" style="object-fit: contain;">
 </div>
 
 ---
