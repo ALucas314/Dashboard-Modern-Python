@@ -1,6 +1,5 @@
 ## 🛠 Dashboard Project 🔗
 
-
 ## 🛠 Tools and Skills 🔗
 
 <table>
@@ -25,13 +24,17 @@
 
 ---
 
-<div style="display: flex; justify-content: space-between;">
+<div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
     <img src="./src/img 1.png" alt="Exemplo imagem" width="48%">
     <img src="./src/img 2.png" alt="Exemplo imagem" width="48%">
 </div>
 <br>
-<img src="./src/img 3.png" alt="Exemplo imagem" width="96%">
-
+<!-- Ajustando a largura das imagens de celular para não ficarem grandes -->
+<div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+    <img src="./src/img 3.png" alt="Exemplo imagem" width="90%" style="max-width: 600px;">
+    <img src="./src/img 4.png" alt="Exemplo imagem" width="90%" style="max-width: 600px;">
+    <img src="./src/img 5.png" alt="Exemplo imagem" width="90%" style="max-width: 600px;">
+</div>
 
 ---
 
