@@ -29,11 +29,11 @@
     <img src="./src/img 2.png" alt="Exemplo imagem" width="48%">
 </div>
 <br>
-<!-- Ajustando a largura das imagens de celular para não ficarem grandes -->
+<!-- Ajustando a altura para ser a mesma das imagens 1 e 2, e mantendo a proporcionalidade -->
 <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
-    <img src="./src/img 3.png" alt="Exemplo imagem" width="90%" style="max-width: 600px;">
-    <img src="./src/img 4.png" alt="Exemplo imagem" width="90%" style="max-width: 600px;">
-    <img src="./src/img 5.png" alt="Exemplo imagem" width="90%" style="max-width: 600px;">
+    <img src="./src/img 3.png" alt="Exemplo imagem" height="250px" style="object-fit: contain;">
+    <img src="./src/img 4.png" alt="Exemplo imagem" height="250px" style="object-fit: contain;">
+    <img src="./src/img 5.png" alt="Exemplo imagem" height="250px" style="object-fit: contain;">
 </div>
 
 ---
