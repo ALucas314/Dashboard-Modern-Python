@@ -27,7 +27,7 @@
 
 <div style="display: flex; justify-content: space-between;">
     <img src="./src/img 1.png" alt="Exemplo imagem" width="48%">
-    <img src="lstm 2.png" alt="Exemplo imagem" width="48%">
+    <img src="./src/img 2.png" alt="Exemplo imagem" width="48%">
 </div>
 <br>
 <img src="lstm 3.png" alt="Exemplo imagem" width="96%">
