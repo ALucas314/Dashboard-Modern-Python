@@ -30,7 +30,7 @@
     <img src="./src/img 2.png" alt="Exemplo imagem" width="48%">
 </div>
 <br>
-<img src="lstm 3.png" alt="Exemplo imagem" width="96%">
+<img src="./src/img 3.png" alt="Exemplo imagem" width="96%">
 
 
 ---
