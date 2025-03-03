@@ -30,17 +30,11 @@
 </div>
 <br>
 
-<!-- Cada imagem em seu próprio bloco para separá-las -->
-<div style="display: block; margin-bottom: 20px;">
-    <img src="./src/img 3.png" alt="Exemplo imagem" height="350px" style="object-fit: contain; width: 100%;">
-</div>
-
-<div style="display: block; margin-bottom: 20px;">
-    <img src="./src/img 4.png" alt="Exemplo imagem" height="350px" style="object-fit: contain; width: 100%;">
-</div>
-
-<div style="display: block; margin-bottom: 20px;">
-    <img src="./src/img 5.png" alt="Exemplo imagem" height="350px" style="object-fit: contain; width: 100%;">
+<!-- Ajuste para as imagens 3, 4 e 5 ficarem lado a lado -->
+<div style="display: flex; justify-content: space-between;">
+    <img src="./src/img 3.png" alt="Exemplo imagem" height="350px" style="object-fit: contain; width: 32%;">
+    <img src="./src/img 4.png" alt="Exemplo imagem" height="350px" style="object-fit: contain; width: 32%;">
+    <img src="./src/img 5.png" alt="Exemplo imagem" height="350px" style="object-fit: contain; width: 32%;">
 </div>
 
 ---
