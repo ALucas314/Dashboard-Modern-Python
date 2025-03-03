@@ -30,20 +30,6 @@
 </div>
 <br>
 
-<!-- Ajuste para as imagens 3, 4 e 5 ficarem lado a lado com espaçamento -->
-<div style="display: flex; justify-content: space-between; align-items: center; gap: 16px;">
-    <img src="./src/img 3.png" alt="Exemplo imagem" height="350px" style="object-fit: contain; width: 32%;">
-</div>
-
-<!-- Ajuste para as imagens 3, 4 e 5 ficarem lado a lado com espaçamento -->
-<div style="display: flex; justify-content: space-between; align-items: center; gap: 16px;">
-    <img src="./src/img 4.png" alt="Exemplo imagem" height="350px" style="object-fit: contain; width: 32%;">
-</div>
-
-<!-- Ajuste para as imagens 3, 4 e 5 ficarem lado a lado com espaçamento -->
-<div style="display: flex; justify-content: space-between; align-items: center; gap: 16px;">
-    <img src="./src/img 5.png" alt="Exemplo imagem" height="350px" style="object-fit: contain; width: 32%;">
-</div>
 
 ---
 
