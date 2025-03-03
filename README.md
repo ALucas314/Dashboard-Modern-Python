@@ -31,9 +31,9 @@
 <br>
 
 <!-- Ajuste para as imagens 3, 4 e 5 ficarem lado a lado com espaçamento -->
-<div style="display: flex; justify-content: space-between;">
-    <img src="./src/img 3.png" alt="Exemplo imagem" height="350px" style="object-fit: contain; width: 32%; margin-right: 16px;">
-    <img src="./src/img 4.png" alt="Exemplo imagem" height="350px" style="object-fit: contain; width: 32%; margin-right: 16px;">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 16px;">
+    <img src="./src/img 3.png" alt="Exemplo imagem" height="350px" style="object-fit: contain; width: 32%;">
+    <img src="./src/img 4.png" alt="Exemplo imagem" height="350px" style="object-fit: contain; width: 32%;">
     <img src="./src/img 5.png" alt="Exemplo imagem" height="350px" style="object-fit: contain; width: 32%;">
 </div>
 
@@ -43,13 +43,30 @@
 
 O projeto foi capaz de realizar as seguintes tarefas:
 
-- [x] Animações simples  
-- [x] Responsividade  
-- [x] Conexão com o banco de dados  
-- [x] Treinamento da rede neural LSTM  
-- [x] Carregamento do peso da rede neural LSTM  
-- [x] Exibição de gráficos sobre o clima  
+- [x] **Animações simples**  
+- [x] **Responsividade**  
+- [x] **Conexão com o banco de dados**  
+- [x] **Treinamento da rede neural LSTM**  
+- [x] **Carregamento do peso da rede neural LSTM**  
+- [x] **Exibição de gráficos sobre o clima**  
 
 > O projeto utiliza **Python** e a biblioteca **Streamlit** para construir a interface interativa. Ferramentas como **Git**, **GitHub** e **Visual Studio Code** foram utilizadas no desenvolvimento.
 
 ---
+
+### 🚀 Tecnologias Utilizadas
+
+- **Python**: Linguagem principal para desenvolvimento do backend e análise de dados.
+- **Streamlit**: Framework para criação de interfaces web interativas.
+- **Git & GitHub**: Controle de versão e hospedagem do código.
+- **Visual Studio Code**: Editor de código principal para desenvolvimento.
+
+---
+
+### 📊 Visualizações
+
+As imagens acima mostram diferentes aspectos do projeto, incluindo gráficos interativos, visualizações de dados e a interface do usuário. O design foi pensado para ser **moderno** e **responsivo**, garantindo uma boa experiência em diferentes dispositivos.
+
+---
+
+### 📂 Estrutura do Projeto
