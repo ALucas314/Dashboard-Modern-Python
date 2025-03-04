@@ -187,8 +187,8 @@ if data is not None and not data.empty:
     show_pred = st.sidebar.checkbox("Mostrar Temperatura Prevista (LSTM)", value=True)
 
     # Sidebar - Visualizar Dados Atuais
-    st.sidebar.markdown("### Visualizar Dados Atuais")
-    show_dados_atuais = st.sidebar.checkbox("Mostrar Dados Atuais", value=False)
+    st.sidebar.markdown("### Visualizar Dados Históricos do Clima")
+    show_dados_atuais = st.sidebar.checkbox("Mostrar Dados do Histórico", value=False)
 
     # Exibir dados da tabela historico_clima se o botão estiver ativado
     if show_dados_atuais:
