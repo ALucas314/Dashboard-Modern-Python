@@ -30,6 +30,18 @@ def carregar_dados():
         st.error(f"Erro ao carregar os dados: {err}")
         return None
 
+# Função para consultar a média da temperatura
+@st.cache_data
+def consultar_media_temperatura_mes(mes, ano):
+    try:
+        engine = sqlalchemy.create_engine("mysql+mysqlconnector://lucas:456321@localhost/clima")
+        query = f"SELECT CalcularMediaTemperaturaMes({mes}, {ano}) AS MediaTemperatura;"
+        result = pd.read_sql(query, engine)
+        return result['MediaTemperatura'].iloc[0]
+    except Exception as err:
+        st.error(f"Erro ao consultar a média da temperatura: {err}")
+        return None
+
 # Função para carregar o modelo de um arquivo .pkl
 @st.cache_resource
 def carregar_modelo(arquivo_pkl):
@@ -98,9 +110,15 @@ if data is not None and not data.empty:
     y_pred_rescaled = scaler.inverse_transform(y_pred)
     y_test_rescaled = scaler.inverse_transform([y_test])
 
-    # Média da temperatura
-    media_temperatura = weather_data['Temperatura'].mean()
-    st.sidebar.write(f'Média da temperatura: {media_temperatura:.2f}°C')
+    # Consultar a média da temperatura para o mês de janeiro de 2025
+    mes = 1
+    ano = 2025
+    media_temperatura = consultar_media_temperatura_mes(mes, ano)
+
+    if media_temperatura is not None:
+        st.sidebar.write(f'Média da temperatura para {mes}/{ano}: {media_temperatura:.2f}°C')
+    else:
+        st.sidebar.write("Não foi possível obter a média da temperatura.")
 
     # Cálculo do MSE (Erro Quadrático Médio)
     mse_lstm = mean_squared_error(y_test_rescaled[0], y_pred_rescaled)
