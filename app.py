@@ -7,7 +7,6 @@ import streamlit as st
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
-from tensorflow.keras.models import load_model
 import sqlalchemy
 import plotly.graph_objects as go
 
@@ -40,6 +39,23 @@ def consultar_media_temperatura_mes(mes, ano):
         return result['MediaTemperatura'].iloc[0]
     except Exception as err:
         st.error(f"Erro ao consultar a média da temperatura: {err}")
+        return None
+
+# Função para consultar a média de umidade por dia
+@st.cache_data
+def consultar_media_umidade_por_dia():
+    try:
+        engine = sqlalchemy.create_engine("mysql+mysqlconnector://lucas:456321@localhost/clima")
+        query = """
+            SELECT dh.Data, AVG(u.`UMIDADE RELATIVA DO AR, HORARIA (%)`) AS umidade_media
+            FROM Umidade u
+            JOIN data_hora dh ON u.data_hora_id_data_hora = dh.id_data_hora
+            GROUP BY dh.Data;
+        """
+        result = pd.read_sql(query, engine)
+        return result
+    except Exception as err:
+        st.error(f"Erro ao consultar a média de umidade por dia: {err}")
         return None
 
 # Função para carregar o modelo de um arquivo .pkl
@@ -129,6 +145,17 @@ if data is not None and not data.empty:
     prediction = model.predict(last_data)
     prediction_rescaled = scaler.inverse_transform(prediction)
     st.sidebar.write(f'Previsão de Temperatura para Amanhã: {prediction_rescaled[0][0]:.2f}°C')
+
+    # Sidebar - Média de umidade por dia
+    st.sidebar.markdown("### Média de Umidade por Dia")
+
+    # Botão expansível
+    with st.sidebar.expander("Ver Média de Umidade por Dia"):
+        media_umidade_por_dia = consultar_media_umidade_por_dia()
+        if media_umidade_por_dia is not None:
+            st.dataframe(media_umidade_por_dia, use_container_width=True)
+        else:
+            st.warning("Não foi possível carregar a média de umidade por dia.")
 
     # Sidebar - Ativar/Desativar as linhas de Temperatura Real e Previsões LSTM
     st.sidebar.markdown("### Comparação entre Temperatura Real e Previsões LSTM")
