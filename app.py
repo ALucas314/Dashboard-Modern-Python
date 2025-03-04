@@ -58,6 +58,30 @@ def consultar_media_umidade_por_dia():
         st.error(f"Erro ao consultar a média de umidade por dia: {err}")
         return None
 
+# Função para carregar dados da tabela dados_atuais
+@st.cache_data
+def carregar_dados_atuais():
+    try:
+        engine = sqlalchemy.create_engine("mysql+mysqlconnector://lucas:456321@localhost/clima")
+        query = "SELECT * FROM historico_clima"
+        data = pd.read_sql(query, engine)
+        return data
+    except Exception as err:
+        st.error(f"Erro ao carregar os dados da tabela dados_atuais: {err}")
+        return None
+
+# Função para carregar dados da tabela historico_clima
+@st.cache_data
+def carregar_historico_clima():
+    try:
+        engine = sqlalchemy.create_engine("mysql+mysqlconnector://lucas:456321@localhost/clima")
+        query = "SELECT * FROM historico_clima;"
+        data = pd.read_sql(query, engine)
+        return data
+    except Exception as err:
+        st.error(f"Erro ao carregar os dados da tabela historico_clima: {err}")
+        return None
+
 # Função para carregar o modelo de um arquivo .pkl
 @st.cache_resource
 def carregar_modelo(arquivo_pkl):
@@ -161,6 +185,19 @@ if data is not None and not data.empty:
     st.sidebar.markdown("### Comparação entre Temperatura Real e Previsões LSTM")
     show_real = st.sidebar.checkbox("Mostrar Temperatura Real", value=True)
     show_pred = st.sidebar.checkbox("Mostrar Temperatura Prevista (LSTM)", value=True)
+
+    # Sidebar - Visualizar Dados Atuais
+    st.sidebar.markdown("### Visualizar Dados Atuais")
+    show_dados_atuais = st.sidebar.checkbox("Mostrar Dados Atuais", value=False)
+
+    # Exibir dados da tabela historico_clima se o botão estiver ativado
+    if show_dados_atuais:
+        st.markdown("### Dados Históricos do Clima")
+        historico_clima = carregar_historico_clima()
+        if historico_clima is not None and not historico_clima.empty:
+            st.dataframe(historico_clima, use_container_width=True)
+        else:
+            st.warning("Não foi possível carregar os dados históricos do clima.")
 
     # Layout dos gráficos
     st.subheader("Visualizações Gráficas")
