@@ -7,7 +7,6 @@ import streamlit as st
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
-from tensorflow.keras.models import load_model
 import sqlalchemy
 import plotly.graph_objects as go
 
@@ -19,27 +18,7 @@ st.set_page_config(page_title="Clima e Previsões", layout="wide", page_icon="�
 def carregar_dados():
     try:
         engine = sqlalchemy.create_engine("mysql+mysqlconnector://lucas:456321@localhost/clima")
-        query = """
-        SELECT dh.Data, dh.`Hora UTC`, 
-               t.`TEMPERATURA DO AR - BULBO SECO, HORARIA (°C)` AS Temperatura,
-               t.`TEMPERATURA MÁXIMA NA HORA ANT. (AUT) (°C)` AS Temp_Max,
-               t.`TEMPERATURA MÍNIMA NA HORA ANT. (AUT) (°C)` AS Temp_Min,
-               t.`TEMPERATURA DO PONTO DE ORVALHO (°C)` AS Temp_Orvalho,
-               t.`TEMPERATURA ORVALHO MAX. NA HORA ANT. (AUT) (°C)` AS Temp_Orvalho_Max,
-               t.`TEMPERATURA ORVALHO MIN. NA HORA ANT. (AUT) (°C)` AS Temp_Orvalho_Min,
-               p.`PRESSAO ATMOSFERICA AO NIVEL DA ESTACAO, HORARIA (mB)` AS Pressao,
-               u.`UMIDADE RELATIVA DO AR, HORARIA (%)` AS Umidade,
-               v.`VENTO, VELOCIDADE HORARIA (m/s)` AS Vento_Velocidade,
-               v.`VENTO, DIREÇÃO HORARIA (gr) (° (gr))` AS Vento_Direcao,
-               o.`RADIACAO GLOBAL (Kj/m²)` AS Radiacao,
-               o.`PRECIPITAÇÃO TOTAL, HORÁRIO (mm)` AS Precipitacao
-        FROM data_hora dh
-        LEFT JOIN Temperaturas t ON dh.id_data_hora = t.data_hora_id_data_hora
-        LEFT JOIN Pressao p ON dh.id_data_hora = p.data_hora_id_data_hora
-        LEFT JOIN Umidade u ON dh.id_data_hora = u.data_hora_id_data_hora
-        LEFT JOIN ventos v ON dh.id_data_hora = v.data_hora_id_data_hora
-        LEFT JOIN Outras_informacoes o ON dh.id_data_hora = o.data_hora_id_data_hora
-        """
+        query = "SELECT * FROM view_clima_completo"
         data = pd.read_sql(query, engine)
         # Verificar e corrigir a coluna "Data"
         if "Data" in data.columns:
@@ -48,6 +27,35 @@ def carregar_dados():
         return data
     except Exception as err:
         st.error(f"Erro ao carregar os dados: {err}")
+        return None
+
+# Função para consultar a média da temperatura
+@st.cache_data
+def consultar_media_temperatura_mes(mes, ano):
+    try:
+        engine = sqlalchemy.create_engine("mysql+mysqlconnector://lucas:456321@localhost/clima")
+        query = f"SELECT CalcularMediaTemperaturaMes({mes}, {ano}) AS MediaTemperatura;"
+        result = pd.read_sql(query, engine)
+        return result['MediaTemperatura'].iloc[0]
+    except Exception as err:
+        st.error(f"Erro ao consultar a média da temperatura: {err}")
+        return None
+
+# Função para consultar a média de umidade por dia
+@st.cache_data
+def consultar_media_umidade_por_dia():
+    try:
+        engine = sqlalchemy.create_engine("mysql+mysqlconnector://lucas:456321@localhost/clima")
+        query = """
+            SELECT dh.Data, AVG(u.`UMIDADE RELATIVA DO AR, HORARIA (%)`) AS umidade_media
+            FROM Umidade u
+            JOIN data_hora dh ON u.data_hora_id_data_hora = dh.id_data_hora
+            GROUP BY dh.Data;
+        """
+        result = pd.read_sql(query, engine)
+        return result
+    except Exception as err:
+        st.error(f"Erro ao consultar a média de umidade por dia: {err}")
         return None
 
 # Função para carregar o modelo de um arquivo .pkl
@@ -118,9 +126,15 @@ if data is not None and not data.empty:
     y_pred_rescaled = scaler.inverse_transform(y_pred)
     y_test_rescaled = scaler.inverse_transform([y_test])
 
-    # Média da temperatura
-    media_temperatura = weather_data['Temperatura'].mean()
-    st.sidebar.write(f'Média da temperatura: {media_temperatura:.2f}°C')
+    # Consultar a média da temperatura para o mês de janeiro de 2025
+    mes = 1
+    ano = 2025
+    media_temperatura = consultar_media_temperatura_mes(mes, ano)
+
+    if media_temperatura is not None:
+        st.sidebar.write(f'Média da temperatura para {mes}/{ano}: {media_temperatura:.2f}°C')
+    else:
+        st.sidebar.write("Não foi possível obter a média da temperatura.")
 
     # Cálculo do MSE (Erro Quadrático Médio)
     mse_lstm = mean_squared_error(y_test_rescaled[0], y_pred_rescaled)
@@ -131,6 +145,17 @@ if data is not None and not data.empty:
     prediction = model.predict(last_data)
     prediction_rescaled = scaler.inverse_transform(prediction)
     st.sidebar.write(f'Previsão de Temperatura para Amanhã: {prediction_rescaled[0][0]:.2f}°C')
+
+    # Sidebar - Média de umidade por dia
+    st.sidebar.markdown("### Média de Umidade por Dia")
+
+    # Botão expansível
+    with st.sidebar.expander("Ver Média de Umidade por Dia"):
+        media_umidade_por_dia = consultar_media_umidade_por_dia()
+        if media_umidade_por_dia is not None:
+            st.dataframe(media_umidade_por_dia, use_container_width=True)
+        else:
+            st.warning("Não foi possível carregar a média de umidade por dia.")
 
     # Sidebar - Ativar/Desativar as linhas de Temperatura Real e Previsões LSTM
     st.sidebar.markdown("### Comparação entre Temperatura Real e Previsões LSTM")
