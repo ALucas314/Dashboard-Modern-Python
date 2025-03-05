@@ -9,6 +9,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 import sqlalchemy
 import plotly.graph_objects as go
+import requests  # Adicionado para fazer requisições à API
 
 # Configurações iniciais
 st.set_page_config(page_title="Clima e Previsões", layout="wide", page_icon="🌤️")
@@ -58,6 +59,30 @@ def consultar_media_umidade_por_dia():
         st.error(f"Erro ao consultar a média de umidade por dia: {err}")
         return None
 
+# Função para carregar dados da tabela dados_atuais
+@st.cache_data
+def carregar_dados_atuais():
+    try:
+        engine = sqlalchemy.create_engine("mysql+mysqlconnector://lucas:456321@localhost/clima")
+        query = "SELECT * FROM historico_clima"
+        data = pd.read_sql(query, engine)
+        return data
+    except Exception as err:
+        st.error(f"Erro ao carregar os dados da tabela dados_atuais: {err}")
+        return None
+
+# Função para carregar dados da tabela historico_clima
+@st.cache_data
+def carregar_historico_clima():
+    try:
+        engine = sqlalchemy.create_engine("mysql+mysqlconnector://lucas:456321@localhost/clima")
+        query = "SELECT * FROM historico_clima;"
+        data = pd.read_sql(query, engine)
+        return data
+    except Exception as err:
+        st.error(f"Erro ao carregar os dados da tabela historico_clima: {err}")
+        return None
+
 # Função para carregar o modelo de um arquivo .pkl
 @st.cache_resource
 def carregar_modelo(arquivo_pkl):
@@ -66,9 +91,52 @@ def carregar_modelo(arquivo_pkl):
             return pickle.load(file)
     return None
 
+# Função para buscar dados da API
+@st.cache_data
+def buscar_dados_api():
+    try:
+        api_key = "cd4c426f74a94faf95b50704250503"
+        cidade = "Castanhal"
+        url = f"http://api.weatherapi.com/v1/forecast.json?key={api_key}&q={cidade}&days=7&aqi=no&alerts=no"
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            
+            # Ajustando a temperatura para corresponder à API do Google
+            temperatura_atual_api = data['current']['temp_c']
+            temperatura_ajustada = temperatura_atual_api + 1.19  # Aplicando o offset
+            
+            # Atualizando o valor de temperatura no JSON retornado
+            data['current']['temp_c'] = temperatura_ajustada
+            
+            # Ajustando também as previsões futuras
+            for day in data['forecast']['forecastday']:
+                day['day']['avgtemp_c'] += 1.19
+                for hour in day['hour']:
+                    hour['temp_c'] += 1.19
+            
+            return data
+        else:
+            st.error(f"Erro ao buscar dados da API: {response.status_code}")
+            return None
+    except Exception as err:
+        st.error(f"Erro ao buscar dados da API: {err}")
+        return None
+
 # Sidebar - Configurações
 st.sidebar.title("Configurações")
 st.sidebar.markdown("### Personalize sua visualização de dados")
+
+# Adicionando a nova aba na sidebar para dados da API
+with st.sidebar.expander("Dados sobre o clima - API"):
+    st.markdown("### Dados da API")
+    if st.button("Carregar Dados da API"):
+        dados_api = buscar_dados_api()
+        if dados_api:
+            st.session_state['dados_api'] = dados_api
+            st.success("Dados da API carregados com sucesso!")
+        else:
+            st.warning("Não foi possível carregar os dados da API.")
 
 # Carregar dados do banco de dados
 data = carregar_dados()
@@ -162,6 +230,19 @@ if data is not None and not data.empty:
     show_real = st.sidebar.checkbox("Mostrar Temperatura Real", value=True)
     show_pred = st.sidebar.checkbox("Mostrar Temperatura Prevista (LSTM)", value=True)
 
+    # Sidebar - Visualizar Dados Atuais
+    st.sidebar.markdown("### Visualizar Dados Históricos do Clima")
+    show_dados_atuais = st.sidebar.checkbox("Mostrar Dados do Histórico", value=False)
+
+    # Exibir dados da tabela historico_clima se o botão estiver ativado
+    if show_dados_atuais:
+        st.markdown("### Dados Históricos do Clima")
+        historico_clima = carregar_historico_clima()
+        if historico_clima is not None and not historico_clima.empty:
+            st.dataframe(historico_clima, use_container_width=True)
+        else:
+            st.warning("Não foi possível carregar os dados históricos do clima.")
+
     # Layout dos gráficos
     st.subheader("Visualizações Gráficas")
 
@@ -244,7 +325,14 @@ if data is not None and not data.empty:
             title="Temperatura Real vs Previsões LSTM",
             xaxis_title="Amostras",
             yaxis_title="Temperatura (°C)",
-            template="plotly_dark"
+            template="plotly_dark",
+            legend=dict(
+                orientation='h',  # Coloca a legenda na horizontal
+                yanchor='top',    # Anexa a legenda no topo do gráfico
+                y=-0.2,           # Ajuste a posição para baixo (pode ser alterado para o seu gosto)
+                xanchor='center', # Alinha ao centro
+                x=0.5             # Posiciona a legenda no centro horizontalmente
+            )
         )
 
         st.plotly_chart(fig)
@@ -258,7 +346,14 @@ if data is not None and not data.empty:
             title="Temperatura Real",
             xaxis_title="Amostras",
             yaxis_title="Temperatura (°C)",
-            template="plotly_dark"
+            template="plotly_dark",
+            legend=dict(
+                orientation='h',  # Coloca a legenda na horizontal
+                yanchor='top',    # Anexa a legenda no topo do gráfico
+                y=-0.2,           # Ajuste a posição para baixo (pode ser alterado para o seu gosto)
+                xanchor='center', # Alinha ao centro
+                x=0.5             # Posiciona a legenda no centro horizontalmente
+            )
         )
         st.plotly_chart(fig_real)
 
@@ -271,9 +366,76 @@ if data is not None and not data.empty:
             title="Previsões LSTM",
             xaxis_title="Amostras",
             yaxis_title="Temperatura (°C)",
-            template="plotly_dark"
+            template="plotly_dark",
+            legend=dict(
+                orientation='h',  # Coloca a legenda na horizontal
+                yanchor='top',    # Anexa a legenda no topo do gráfico
+                y=-0.2,           # Ajuste a posição para baixo (pode ser alterado para o seu gosto)
+                xanchor='center', # Alinha ao centro
+                x=0.5             # Posiciona a legenda no centro horizontalmente
+            )
         )
         st.plotly_chart(fig_pred)
+
+    # Verificando se os dados da API estão carregados
+    if 'dados_api' in st.session_state and st.session_state['dados_api']:
+        dados_api = st.session_state['dados_api']
+        
+        # Criando um gráfico de barras comparando as previsões da API
+        st.markdown("### Previsões da API")
+        fig_comparacao = go.Figure()
+
+        # Previsões da API
+        datas_api = [pd.to_datetime(day['date']) for day in dados_api['forecast']['forecastday']]
+        temperaturas_api = [day['day']['avgtemp_c'] for day in dados_api['forecast']['forecastday']]  # Já ajustado na função buscar_dados_api
+
+        # Previsões LSTM (usando as previsões já carregadas)
+        datas_lstm = weather_data['Data'][-len(y_pred_rescaled):]  # Ajuste para corresponder ao período da API
+        temperaturas_lstm = y_pred_rescaled.flatten()
+
+        # Adicionando as previsões da API
+        fig_comparacao.add_trace(go.Bar(
+            x=datas_api,
+            y=temperaturas_api,
+            name="Previsões da API (Ajustadas)",
+            marker_color='Lightblue'
+        ))
+
+        # Layout do gráfico
+        fig_comparacao.update_layout(
+            title="Previsões da API para os determinados dias:",
+            xaxis_title="Data",
+            yaxis_title="Temperatura (°C)",
+            template="plotly_dark",
+            barmode='group'  # Barras agrupadas
+        )
+        st.plotly_chart(fig_comparacao)
+
+        # Gráfico da temperatura atual em Castanhal
+        st.markdown("### Temperatura atual em Castanhal com base no sensor da API:")
+        fig_temperatura_atual = go.Figure(go.Indicator(
+            mode="gauge+number",
+            value=dados_api['current']['temp_c'],  # Usando o valor ajustado
+            title={'text': "Temperatura Atual (°C)"},
+            gauge={'axis': {'range': [None, 40]},  # Define o range da temperatura
+            'bar': {'color': "aqua"},  # Cor da barra do gráfico
+            'steps': [
+                {'range': [0, 10], 'color': "green"},
+                {'range': [10, 20], 'color': "yellow"},
+                {'range': [20, 30], 'color': "orange"},
+                {'range': [30, 40], 'color': "red"}
+            ],
+        },
+        number={'font': {'size': 60}},  # Ajuste de tamanho da fonte do número
+
+        ))
+        fig_temperatura_atual.update_layout(
+            template="plotly_dark",
+            autosize=True,  # Garante que o gráfico se ajuste ao espaço disponível
+            margin=dict(l=0, r=0, t=30, b=30),  # Ajuste as margens conforme necessário
+            height=420  # Pode ser ajustado conforme a necessidade
+        )
+        st.plotly_chart(fig_temperatura_atual)
 
 else:
     st.warning("Não foi possível carregar os dados ou os dados estão vazios.")
