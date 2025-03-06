@@ -59,17 +59,6 @@ def consultar_media_umidade_por_dia():
         st.error(f"Erro ao consultar a média de umidade por dia: {err}")
         return None
 
-# Função para carregar dados da tabela dados_atuais
-@st.cache_data
-def carregar_dados_atuais():
-    try:
-        engine = sqlalchemy.create_engine("mysql+mysqlconnector://lucas:456321@localhost/clima")
-        query = "SELECT * FROM historico_clima"
-        data = pd.read_sql(query, engine)
-        return data
-    except Exception as err:
-        st.error(f"Erro ao carregar os dados da tabela dados_atuais: {err}")
-        return None
 
 # Função para carregar dados da tabela historico_clima
 @st.cache_data
