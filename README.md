@@ -98,8 +98,8 @@ source venv/bin/activate
 ```bash
 # Certifique-se de que o ambiente virtual está ativo.
 # Em seguida, instale as dependências do projeto:
-pip install pandas numpy matplotlib streamlit scikit-learn tensorflow sqlalchemy plotly
-pip install mysql-connector-python
+pip install pandas numpy matplotlib streamlit scikit-learn tensorflow sqlalchemy plotly mysql-connector-python keras
+
 ```
 
 ---
