@@ -25,8 +25,8 @@
 ---
 
 <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
-    <img src="./static/img 1.png" alt="Exemplo imagem" style="width: 96%; height: auto;">
-    <img src="./static/img 2.png" alt="Exemplo imagem" style="width: 96%; height: auto;">
+    <img src="/static/img 1.png" alt="Exemplo imagem" style="width: 96%; height: auto;">
+    <img src="/static/img 2.png" alt="Exemplo imagem" style="width: 96%; height: auto;">
 </div>
 <br>
 
