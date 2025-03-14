@@ -418,7 +418,7 @@ def main():
             X_train = X_train.reshape(X_train.shape[0], X_train.shape[1], 1)
             X_test = X_test.reshape(X_test.shape[0], X_test.shape[1], 1)
 
-            model_data = carregar_modelo('/home/lucas/Documentos/PROJETO COM ARQUITETURA/Dashboard-Modern-Python/models/pesoLSTM.pkl')
+            model_data = carregar_modelo('../models/pesoLSTM.pkl')
             if model_data:
                 st.sidebar.write("Carregando modelo salvo...")
                 model = model_data['model']
